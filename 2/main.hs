@@ -4,10 +4,6 @@ import Data.Text as T
 import GHC.List as L
 import GHC.Base as B
 
--- 12 red cubes, 13 green cubes, and 14 blue cubes
-
--- parseLine :: String -> Int
-
 data Game = Game {red :: Int, green :: Int, blue :: Int}
 
 folder :: Int -> Int -> Int
