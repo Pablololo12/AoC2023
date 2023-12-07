@@ -1,12 +1,14 @@
 import Data.Char
 import Data.Text.IO
 import Data.Text as T
+import Data.List as D
 import GHC.List as L
 import GHC.Base as B
+import Data.Maybe
 import Data.Map
 
 getNum :: Char -> Int
-getNum x = fromList [('A',14),('K',13),('Q',12),('J',11),('T',10),('9',9),('8',8),('7',7),('6',6),('5',5),('4',4),('3',3),('2',2)] ! x
+getNum x = fromList [('A',14),('K',13),('Q',12),('T',10),('9',9),('8',8),('7',7),('6',6),('5',5),('4',4),('3',3),('2',2),('J',1)] ! x
 
 specAccum :: Int -> (Text,Int,Int) -> Int
 specAccum x (a,b,c) = x + (c*b)
@@ -20,13 +22,16 @@ parse :: Text -> (Text,Int)
 parse x = (j!!0,read(unpack(j!!1)))
     where j = T.split (==' ') x
 
+countJ :: [(Char, Int)] -> Int
+countJ x = snd (fromMaybe ('m',0) j)
+    where j = D.find (\w -> (fst w)=='J') x
+
 isFive :: [(Char, Int)] -> Bool
 isFive x = (L.length x) == 1
 
 isFour :: [(Char, Int)] -> Bool
 isFour (x:y:_) = ((snd x) == 4) || ((snd y) == 4)
 isFour _ = False
-
 
 isFullH :: [(Char, Int)] -> Bool
 isFullH (x:y:_) = (((snd x) == 3) && ((snd y) == 2)) || (((snd y) == 3) && ((snd x) == 2))
@@ -63,10 +68,19 @@ compareArr (x:xs) (y:ys) a b
     | y && (not x) = False
     | otherwise = compareArr xs ys a b
 
+sumJ :: [(Char, Int)] -> [(Char, Int)]
+sumJ x = [((fst a), (snd a)+c)] ++ b
+    where c = countJ x
+          a = L.head f
+          b = L.drop 1 f
+          f = L.reverse (sortOn snd (L.filter (\w -> (fst w)/='J') x))
+
 compare :: Text -> Text -> Bool
 compare a b = compareArr as bs a b
-    where as = getArr (removeDuplicates (unpack a))
-          bs = getArr (removeDuplicates (unpack b))
+    where as = L.zipWith (||) (getArr ars) (getArr (sumJ ars))
+          bs = L.zipWith (||) (getArr brs) (getArr (sumJ brs))
+          ars = removeDuplicates (unpack a)
+          brs = removeDuplicates (unpack b)
 
 order :: [(Text,Int)] -> [(Text,Int)]
 order [] = []
