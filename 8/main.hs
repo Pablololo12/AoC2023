@@ -7,12 +7,12 @@ import GHC.Base as B
 import Data.Map as M
 import Debug.Trace
 
-iter :: [Int] -> [Int] -> Text -> Map Text (Text,Text) -> Int
-iter f [] w m = iter f f w m
-iter f (x:xs) w m
-    | w == pack("ZZZ") = 0
-    | x == 0 = 1 + (iter f xs (fst (m ! w)) m)
-    | x == 1 = 1 + (iter f xs (snd (m ! w)) m)
+iter :: [Int] -> [Int] -> Int -> Text -> Map Text (Text,Text) -> Int
+iter f [] c w m = iter f f c w m
+iter f (x:xs) c w m
+    | w == pack("ZZZ") = c
+    | x == 0 = iter f xs (c+1) (fst (m ! w)) m
+    | x == 1 = iter f xs (c+1) (snd (m ! w)) m
 
 maptoint :: String -> [Int]
 maptoint [] = []
@@ -27,7 +27,7 @@ prepLines (x:xs) = (a,(L.head b, L.last b)) : prepLines xs
           c = T.split (=='=') (T.filter (/=' ') x)
 
 doAlgo :: [Text] -> Int
-doAlgo (x:xs) = iter j j (L.head (T.split (==' ') (L.head xs))) w
+doAlgo (x:xs) = iter j j 0 (L.head (T.split (==' ') (L.head xs))) w
     where j = maptoint (unpack x)
           w = fromList (prepLines xs)
 
