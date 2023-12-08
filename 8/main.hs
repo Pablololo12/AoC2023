@@ -14,6 +14,14 @@ iter f (x:xs) c w m
     | x == 0 = iter f xs (c+1) (fst (m ! w)) m
     | x == 1 = iter f xs (c+1) (snd (m ! w)) m
 
+iterv3 :: [Int] -> [Int] -> Int -> Text -> Map Text (Text,Text) -> [Int]
+iterv3 f [] c w m = iterv3 f f c w m
+iterv3 f (x:xs) c w m
+    | (T.last w)=='Z' && x==0 = c : (iterv3 f xs (c+1) (fst (m ! w)) m)
+    | (T.last w)=='Z' && x==1 = c : (iterv3 f xs (c+1) (snd (m ! w)) m)
+    | x == 0 = (iterv3 f xs (c+1) (fst (m ! w)) m)
+    | x == 1 = (iterv3 f xs (c+1) (snd (m ! w)) m)
+
 allFinishZ :: [Text] -> Bool
 allFinishZ [] = True
 allFinishZ (x:xs)
@@ -55,7 +63,30 @@ doAlgov2 (x:xs) = iterv2 j j 0 m w
           m = L.filter (\y -> (T.last y)=='A') (B.map (T.filter (/=' ')) (B.map (L.head . (T.split (=='='))) xs))
           w = fromList (prepLines xs)
 
+search :: Int -> [Int] -> Bool
+search _ [] = False
+search a (x:xs)
+        | a<x = False
+        | a==x = True
+        | otherwise = search a xs
+
+redd :: [Int] -> [[Int]] -> Int
+redd [] _ = 0
+redd (x:xs) a
+        | L.foldl (&&) True (B.map (search x) a) = x
+        | otherwise = redd xs a
+
+red :: [[Int]] -> Int
+red [] = 0
+red (x:xs) = redd x xs
+
+doAlgov3 :: [Text] -> Int
+doAlgov3 (x:xs) = red (B.map (\y -> iterv3 j j 0 y w) m)
+    where j = maptoint (unpack x)
+          m = L.filter (\y -> (T.last y)=='A') (B.map (T.filter (/=' ')) (B.map (L.head . (T.split (=='='))) xs))
+          w = fromList (prepLines xs)
+
 main :: IO()
 main = do
      content <- Data.Text.IO.readFile "input.txt"
-     print (doAlgov2 (L.filter (not . T.null) (T.lines content)))
+     print (doAlgov3 (L.filter (not . T.null) (T.lines content)))
