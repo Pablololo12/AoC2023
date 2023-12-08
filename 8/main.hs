@@ -70,11 +70,17 @@ search a (x:xs)
         | a==x = True
         | otherwise = search a xs
 
+reduce :: Int -> [[Int]] -> Bool
+reduce _ [] = True
+reduce a (x:xs)
+        | search a x = reduce a xs
+        | otherwise = False
+
 redd :: [Int] -> [[Int]] -> Int
 redd [] _ = 0
 redd (x:xs) a
-        | L.foldl (&&) True (B.map (search x) a) = x
-        | otherwise = redd xs a
+        | reduce x a = x
+        | otherwise = redd xs (B.map (L.dropWhile(<x)) a)
 
 red :: [[Int]] -> Int
 red [] = 0
