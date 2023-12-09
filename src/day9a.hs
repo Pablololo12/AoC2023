@@ -1,3 +1,5 @@
+module Day9a (solve) where
+
 import Data.Char
 import Data.Text.IO
 import Data.Text as T
@@ -5,7 +7,6 @@ import Data.List as D
 import GHC.List as L
 import GHC.Base as B
 import Data.Map as M
-import Debug.Trace
 
 reduce :: [Int] -> [Int]
 reduce (x:y:xs) = (y-x) : reduce (y:xs) 
@@ -26,11 +27,5 @@ doAlgo :: [Text] -> Int
 doAlgo x = L.foldl (+) 0 $ extrapolate j
     where j = B.map (\w -> B.map (read . unpack) w) (B.map (T.words) x)
 
-doAlgov2 :: [Text] -> Int
-doAlgov2 x = L.foldl (+) 0 $ extrapolate j
-    where j = B.map (L.reverse) $ B.map (\w -> B.map (read . unpack) w) (B.map (T.words) x)
-
-main :: IO()
-main = do
-     content <- Data.Text.IO.readFile "input.txt"
-     print (doAlgov2 (T.lines content))
+solve :: Text -> Int
+solve x = doAlgo $ T.lines x

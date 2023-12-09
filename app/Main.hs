@@ -16,6 +16,12 @@ import Day4b
 import Day5a
 import Day5b
 import Day6
+import Day7a
+import Day7b
+import Day8a
+import Day8b
+import Day9a
+import Day9b
 
 retdiv :: OS -> String
 retdiv Windows = "\\"
@@ -37,7 +43,13 @@ days = [(Day1a.solve, "day1.txt","Day1a",54630),
         (Day5a.solve, "day5.txt","Day5a",551761867),
         (Day5b.solve, "day5.txt","Day5b",57451709),
         (Day6.solve, "day6a.txt","Day6a",5133600),
-        (Day6.solve, "day6b.txt","Day6b",40651271)]
+        (Day6.solve, "day6b.txt","Day6b",40651271),
+        (Day7a.solve, "day7.txt","Day7a",253954294),
+        (Day7b.solve, "day7.txt","Day7b",254837398),
+        (Day8a.solve, "day8.txt","Day8a",16579),
+        (Day8b.solve, "day8.txt","Day8b",12927600769609),
+        (Day9a.solve, "day9.txt","Day9a",1853145119),
+        (Day9b.solve, "day9.txt","Day9b",923)]
 
 run :: (Text->Int, String,String,Int) -> IO ()
 run (f,s,d,i) = do

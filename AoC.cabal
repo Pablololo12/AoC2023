@@ -63,11 +63,18 @@ library
         Day5a
         Day5b
         Day6
+        Day7a
+        Day7b
+        Day8a
+        Day8b
+        Day9a
+        Day9b
     hs-source-dirs:
         src
     build-depends:
         base ^>=4.19.0.0,
-        text
+        text,
+        containers
     default-language: Haskell2010
 
 executable AoC
