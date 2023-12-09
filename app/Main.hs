@@ -22,6 +22,38 @@ import Day8a
 import Day8b
 import Day9a
 import Day9b
+import Day10a
+import Day10b
+import Day11a
+import Day11b
+import Day12a
+import Day12b
+import Day13a
+import Day13b
+import Day14a
+import Day14b
+import Day15a
+import Day15b
+import Day16a
+import Day16b
+import Day17a
+import Day17b
+import Day18a
+import Day18b
+import Day19a
+import Day19b
+import Day20a
+import Day20b
+import Day21a
+import Day21b
+import Day22a
+import Day22b
+import Day23a
+import Day23b
+import Day24a
+import Day24b
+import Day25a
+import Day25b
 
 retdiv :: OS -> String
 retdiv Windows = "\\"
@@ -49,7 +81,39 @@ days = [(Day1a.solve, "day1.txt","Day1a",54630),
         (Day8a.solve, "day8.txt","Day8a",16579),
         (Day8b.solve, "day8.txt","Day8b",12927600769609),
         (Day9a.solve, "day9.txt","Day9a",1853145119),
-        (Day9b.solve, "day9.txt","Day9b",923)]
+        (Day9b.solve, "day9.txt","Day9b",923),
+        (Day10a.solve, "day10.txt","Day10a",0),
+        (Day10b.solve, "day10.txt","Day10b",0),
+        (Day11a.solve, "day11.txt","Day11a",0),
+        (Day11b.solve, "day11.txt","Day11b",0),
+        (Day12a.solve, "day12.txt","Day12a",0),
+        (Day12b.solve, "day12.txt","Day12b",0),
+        (Day13a.solve, "day13.txt","Day13a",0),
+        (Day13b.solve, "day13.txt","Day13b",0),
+        (Day14a.solve, "day14.txt","Day14a",0),
+        (Day14b.solve, "day14.txt","Day14b",0),
+        (Day15a.solve, "day15.txt","Day15a",0),
+        (Day15b.solve, "day15.txt","Day15b",0),
+        (Day16a.solve, "day16.txt","Day16a",0),
+        (Day16b.solve, "day16.txt","Day16b",0),
+        (Day17a.solve, "day17.txt","Day17a",0),
+        (Day17b.solve, "day17.txt","Day17b",0),
+        (Day18a.solve, "day18.txt","Day18a",0),
+        (Day18b.solve, "day18.txt","Day18b",0),
+        (Day19a.solve, "day19.txt","Day19a",0),
+        (Day19b.solve, "day19.txt","Day19b",0),
+        (Day20a.solve, "day20.txt","Day20a",0),
+        (Day20b.solve, "day20.txt","Day20b",0),
+        (Day21a.solve, "day21.txt","Day21a",0),
+        (Day21b.solve, "day21.txt","Day21b",0),
+        (Day22a.solve, "day22.txt","Day22a",0),
+        (Day22b.solve, "day22.txt","Day22b",0),
+        (Day23a.solve, "day23.txt","Day23a",0),
+        (Day23b.solve, "day23.txt","Day23b",0),
+        (Day24a.solve, "day24.txt","Day24a",0),
+        (Day24b.solve, "day24.txt","Day24b",0),
+        (Day25a.solve, "day25.txt","Day25a",0),
+        (Day25b.solve, "day25.txt","Day25b",0)]
 
 run :: (Text->Int, String,String,Int) -> IO ()
 run (f,s,d,i) = do

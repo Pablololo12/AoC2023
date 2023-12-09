@@ -69,6 +69,38 @@ library
         Day8b
         Day9a
         Day9b
+        Day10a
+        Day10b
+        Day11a
+        Day11b
+        Day12a
+        Day12b
+        Day13a
+        Day13b
+        Day14a
+        Day14b
+        Day15a
+        Day15b
+        Day16a
+        Day16b
+        Day17a
+        Day17b
+        Day18a
+        Day18b
+        Day19a
+        Day19b
+        Day20a
+        Day20b
+        Day21a
+        Day21b
+        Day22a
+        Day22b
+        Day23a
+        Day23b
+        Day24a
+        Day24b
+        Day25a
+        Day25b
     hs-source-dirs:
         src
     build-depends:
