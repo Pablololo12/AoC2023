@@ -1,3 +1,5 @@
+module Day4b (solve) where
+
 import Data.Char
 import Data.Text.IO
 import Data.Text as T
@@ -17,8 +19,7 @@ reduce (x:xs) y
       | otherwise = reduce xs y
 
 calculateScore :: [Int] -> [Int] -> Int
-calculateScore x y = if z==0 then 0 else 2^(z-1)
-    where z = L.length (reduce x y)
+calculateScore x y = L.length (reduce x y)
 
 checkLine :: Text -> Int
 checkLine x = calculateScore (parseNums (T.strip (L.head y))) (parseNums (T.strip (L.last y)))
@@ -26,19 +27,6 @@ checkLine x = calculateScore (parseNums (T.strip (L.head y))) (parseNums (T.stri
 
 removeid :: Text -> Int
 removeid x = checkLine (L.last (T.split (==':') x))
-
-doAlgo :: [Text] -> [Int]
-doAlgo x = B.map (removeid) x
-
-calculateScorev2 :: [Int] -> [Int] -> Int
-calculateScorev2 x y = L.length (reduce x y)
-
-checkLinev2 :: Text -> Int
-checkLinev2 x = calculateScorev2 (parseNums (T.strip (L.head y))) (parseNums (T.strip (L.last y)))
-    where y = T.split (=='|') x
-
-removeidv2 :: Text -> Int
-removeidv2 x = checkLinev2 (L.last (T.split (==':') x))
 
 accpar :: [(Int, Int)] -> Int
 accpar [] = 1
@@ -53,12 +41,10 @@ tree (x:xs) = (calcchild y x) : y
     where y = tree xs
 
 doAlgo1 :: [Text] -> [Int]
-doAlgo1 x = B.map (removeidv2) x
+doAlgo1 x = B.map (removeid) x
 
-doAlgov2 :: [Text] -> [Int]
-doAlgov2 x = snd (L.unzip(tree (doAlgo1 x)))
+doAlgo :: [Text] -> [Int]
+doAlgo x = snd (L.unzip(tree (doAlgo1 x)))
 
-main :: IO()
-main = do
-     content <- Data.Text.IO.readFile "input.txt"
-     print (L.foldl (+) 0 (doAlgov2 (T.lines content)))
+solve :: Text -> Int
+solve x = L.foldl (+) 0 $ doAlgo $ T.lines x

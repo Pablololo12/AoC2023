@@ -1,9 +1,10 @@
+module Day6 (solve) where
+
 import Data.Char
 import Data.Text.IO
 import Data.Text as T
 import GHC.List as L
 import GHC.Base as B
-import Debug.Trace
 
 parsn :: Text -> Int
 parsn x = read (T.unpack x)
@@ -21,7 +22,5 @@ algo (a,b) = L.foldl (+) 0 (B.map (canBreak) (L.zip3 [1..a] (L.take a (repeat a)
 doAlgo :: [Text] -> [Int]
 doAlgo (x:y:_) = B.map (algo) (L.zip (parseNums x) (parseNums y))
 
-main :: IO()
-main = do
-     content <- Data.Text.IO.readFile "input.txt"
-     print (L.foldl (*) 1 (doAlgo (T.lines content)))
+solve :: Text -> Int
+solve x = L.foldl (*) 1 $ doAlgo $ T.lines x
