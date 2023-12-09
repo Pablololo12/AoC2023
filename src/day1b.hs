@@ -39,8 +39,3 @@ doAlgo x = j*10 + k
 
 solve :: Text -> Int
 solve x = GHC.List.foldl (+) 0 (B.map (doAlgo . unpack) (T.lines x))
-
-main :: IO()
-main = do
-    content <- Data.Text.IO.readFile "input.txt"
-    print $ solve content
