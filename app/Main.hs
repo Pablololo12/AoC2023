@@ -2,8 +2,10 @@ module Main where
 
 import Data.List as L
 import Data.Text
+import Data.Maybe
 import qualified Data.Text.IO
 import Distribution.System
+import System.Environment
 
 import Day1a
 import Day1b
@@ -121,5 +123,14 @@ run (f,s,d,i) = do
             let res = f content
             print $ d ++ " " ++ (show res) ++ " " ++ (show $ res==i)
 
+search :: String -> (Text->Int, String, String,Int)
+search x = fromMaybe (L.head $ days) $ L.find (\(_,_,w,_) -> x==w) $ days
+
+parseArgs :: [String] -> IO ()
+parseArgs [] = mapM_ (run) $ days
+parseArgs (x:_) = run $ search x
+
 main :: IO ()
-main = mapM_ (run) $ days
+main = do
+    args <- getArgs
+    parseArgs args
