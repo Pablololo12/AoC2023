@@ -6,8 +6,6 @@ import Data.Text as T
 import Data.List as D
 import GHC.List as L
 import GHC.Base as B
-import qualified Data.Map as M
-import Debug.Trace
 import Data.MemoTrie as Memo
 
 increase :: ([Char],[Int]) -> ([Char],[Int])
