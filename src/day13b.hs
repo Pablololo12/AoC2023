@@ -20,8 +20,7 @@ checkMirror :: [[Int]] -> [[Int]] -> Int -> Int -> ([Int]->[Int]->Bool) -> Int
 checkMirror (a:b:x) f i h e
     | i==h = checkMirror (b:x) (f++[a]) (i+1) h e
     | otherwise = if (e a b) then let r=(checkMirrorAux (reverse f) (x) i e) in if r==0 then (checkMirror (b:x) (f++[a]) (i+1) h e) else r else checkMirror (b:x) (f++[a]) (i+1) h e
-checkMirror x y z _ _ = 0
-checkMirror [] _ _ _ _ = 0
+checkMirror _ _ _ _ _ = 0
 
 checkEither :: [[Int]] -> Int
 checkEither x = horizontal*100+vertical
@@ -31,21 +30,13 @@ checkEither x = horizontal*100+vertical
             horizontalOld = checkMirror x [] 1 0 (==)
             verticalOld = checkMirror (transpose x) [] 1 0 (==)
 
-transform :: Char -> Int
-transform '.' = 0
-transform '#' = 1
-
 getMatrices :: [T.Text] -> [[[Int]]] -> [[[Int]]]
 getMatrices (x:xs) (a:as)
-    | x==(T.pack "") = getMatrices xs ([]:a:as)
-    | otherwise = getMatrices xs ((a++[(map (transform) (T.unpack x))]):as)
+  | x==(T.pack "") = getMatrices xs ([]:a:as)
+  | otherwise = getMatrices xs ((a++[(map (\w -> if w=='.' then 0 else 1) (T.unpack x))]):as)
 getMatrices [] a = a
-getMatrices (x:xs) [] = getMatrices xs [[(map (transform) (T.unpack x))]]
-
-adder :: Int -> Int -> Int
-adder b a = (a+b)
 
 solve :: T.Text -> Int
-solve x = foldr (adder) 0 $ map (checkEither) matrices
+solve x = foldr (+) 0 $ map (checkEither) matrices
     where
-        matrices = getMatrices (T.lines x) []
+        matrices = getMatrices (T.lines x) [[]]
