@@ -1,7 +1,6 @@
 module Day13b (solve) where
 
 import qualified Data.Text as T
-import Debug.Trace
 import Data.List
 import Data.Bits
 
