@@ -29,12 +29,28 @@ cyc = Memo.memo cyc'
   where
     cyc' x = transpose $ map (reverse) $ swiftMatrix $ map (reverse) $ transpose $ map (reverse) $ swiftMatrix $ map (reverse) $ transpose $ swiftMatrix $ transpose $ swiftMatrix x
 
-loop :: Int -> [[Int]] -> [[Int]]
+loop :: Int -> [[Int]] -> [Int]
 loop i x
-  | i==1000000000 = x
-  | otherwise = loop (i+1) (cyc x)
+  | i==2000 = []
+  | otherwise = (foldr (+) 0 $ map (calcLoad) rotated):loop (i+1) rotated
+    where
+      rotated = cyc x
+
+findPatternAux :: [Int] -> [Int] -> Bool
+findPatternAux p x = (concat $ take 10 $ repeat p) == (take len x)
+  where
+    len = 10*(length p)
+
+findPattern :: [Int] -> [Int] -> [Int]
+findPattern x (y:ys)
+  | found = x
+  | otherwise = findPattern (x++[y]) ys
+  where
+    found = findPatternAux x (y:ys)
 
 solve :: T.Text -> Int
-solve x = foldr (+) 0 $ map (calcLoad) $ loop 0 $ transpose matrices
+solve x = head $ drop 999999999 $ ((drop 1000 listofloads)++(concat $ take 1000000000 $ repeat pat))
   where
+    pat = findPattern [(listofloads !! 1000)] (drop 1001 listofloads)
+    listofloads = loop 0 $ transpose matrices
     matrices = getMatrices (T.lines x)
