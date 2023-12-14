@@ -1,6 +1,40 @@
 module Day14b (solve) where
 
-import Data.Text as T
+import qualified Data.Text as T
+import Data.List
+import Debug.Trace
+import Data.MemoTrie as Memo
 
-solve :: Text -> Int
-solve x = 0
+swiftColumns :: [Int] -> [Int]
+swiftColumns [] = []
+swiftColumns (x:xs)
+  | x<2 = (take count $ repeat 1)++(take ((length list)-count) $ repeat 0)++(swiftColumns (dropWhile (<2) (x:xs)))
+  | otherwise = x:(swiftColumns xs)
+    where
+        count = foldr (+) 0 list
+        list = takeWhile (<2) (x:xs)
+
+getMatrices :: [T.Text] -> [[Int]]
+getMatrices (x:xs) = (map (\w -> if w=='.' then 0 else if w=='#' then 2 else 1) (T.unpack x)) : getMatrices xs
+getMatrices [] = []
+
+calcLoad :: [Int] -> Int
+calcLoad x = foldr (\(y,z) j -> if z==2 then j else (y*z)+j) 0 $ zip [1..] $ reverse x
+
+swiftMatrix :: [[Int]] -> [[Int]]
+swiftMatrix x = map (swiftColumns) x
+
+cyc :: [[Int]] -> [[Int]]
+cyc = Memo.memo cyc'
+  where
+    cyc' x = transpose $ map (reverse) $ swiftMatrix $ map (reverse) $ transpose $ map (reverse) $ swiftMatrix $ map (reverse) $ transpose $ swiftMatrix $ transpose $ swiftMatrix x
+
+loop :: Int -> [[Int]] -> [[Int]]
+loop i x
+  | i==1000000000 = x
+  | otherwise = loop (i+1) (cyc x)
+
+solve :: T.Text -> Int
+solve x = foldr (+) 0 $ map (calcLoad) $ loop 0 $ transpose matrices
+  where
+    matrices = getMatrices (T.lines x)
