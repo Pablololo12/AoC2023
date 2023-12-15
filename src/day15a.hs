@@ -1,6 +1,13 @@
 module Day15a (solve) where
 
-import Data.Text as T
+import qualified Data.Text as T
+import Data.Char (ord)
 
-solve :: Text -> Int
-solve x = 0
+step :: Int -> Char -> Int
+step i c = (17*(i + (ord c))) `mod` 256
+
+hash :: T.Text -> Int
+hash x = T.foldl (\a c -> step a c) 0 x
+
+solve :: T.Text -> Int
+solve x = foldr (+) 0 $ map (hash) $ T.split (==',') $ T.strip x
