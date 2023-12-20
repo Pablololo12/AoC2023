@@ -4,7 +4,6 @@ import qualified Data.Text as T
 import qualified Data.Map.Strict as M
 import Data.Maybe
 import Data.List
-import Debug.Trace
 
 data Var = X | M | A | S | Z deriving (Eq,Ord,Show)
 data Op = GGT | LLT | T deriving (Eq,Ord,Show)
@@ -42,12 +41,8 @@ parseRules (x:xs) = (indx,rules):parseRules xs
 
 algoAux :: [Entry] -> Input -> [(String,Input)]
 algoAux (x@(a,f,b,c):xs) i
-  | f==GGT && (head (i M.! a))>b = [(c,i)]
-  | f==LLT && (last (i M.! a))<b = [(c,i)]
-  | f==GGT && (last (i M.! a))<b = algoAux xs i
-  | f==LLT && (head (i M.! a))>b = algoAux xs i
-  | f==GGT = (c, (M.insert a (dropWhile (<=b) (i M.! a)) i)):algoAux xs (M.insert a (takeWhile (<b) (i M.! a)) i)
-  | f==LLT = (c, (M.insert a (takeWhile (<b) (i M.! a)) i)):algoAux xs (M.insert a (dropWhile (<=b) (i M.! a)) i)
+  | f==GGT = (c, (M.insert a (dropWhile (<=b) (i M.! a)) i)):algoAux xs (M.insert a (takeWhile (<=b) (i M.! a)) i)
+  | f==LLT = (c, (M.insert a (takeWhile (<b) (i M.! a)) i)):algoAux xs (M.insert a (dropWhile (<b) (i M.! a)) i)
   | otherwise = [(c,i)]
 
 sumEnt :: Input -> Int

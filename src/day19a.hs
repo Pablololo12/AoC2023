@@ -4,7 +4,6 @@ import qualified Data.Text as T
 import qualified Data.Map.Strict as M
 import Data.Maybe
 import Data.List
-import Debug.Trace
 
 data Var = X | M | A | S | Z deriving (Eq,Ord,Show)
 type Entry = (Var,(Int->Int->Bool),Int,String)
@@ -67,7 +66,7 @@ sumEnt :: Input -> Int
 sumEnt i = (i M.! X)+(i M.! M)+(i M.! A)+(i M.! S)
 
 solve :: T.Text -> Int
-solve x = traceShow (accept) foldl (\a (c,d) -> if d then a+c else a) 0 $ zip count accept
+solve x = foldl (\a (c,d) -> if d then a+c else a) 0 $ zip count accept
   where
     count = map (sumEnt) inputs
     accept = map (\w -> algo rules "in" w) inputs
