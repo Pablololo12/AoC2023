@@ -14,9 +14,9 @@ type Flops = M.Map Entry ([Entry],State)
 type Conjunction = M.Map Entry ([Entry],M.Map Entry Signal)
 
 activateFlops :: Cable -> Flops -> [Cable] -> ([Cable],Flops)
-activateFlops (e,s,_) f acum
+activateFlops (e,s,o) f acum
   | M.member e f = if s==HIGH then (acum,f) else ((zip3 ents (repeat change) (repeat e))++acum,addLow)
-  | otherwise = (acum,f)
+  | otherwise = ((e,s,o):acum,f)
   where
     (ents,m) = (f M.! e)
     change = if m==ON then LOW else HIGH
@@ -25,7 +25,7 @@ activateFlops (e,s,_) f acum
 
 activateConj :: Cable -> Conjunction -> [Cable] -> ([Cable],Conjunction)
 activateConj (e,s,o) c acum
-  | M.member e c = if allHigh then ((zip3 rets (repeat LOW) (repeat e))++acum,changeSignal) else ((zip3 rets (repeat HIGH) (repeat e))++acum,changeSignal)
+  | M.member e c =  if allHigh then ((zip3 rets (repeat LOW) (repeat e))++acum,changeSignal) else ((zip3 rets (repeat HIGH) (repeat e))++acum,changeSignal)
   | otherwise = ((e,s,o):acum,c)
   where
     allHigh = not $ LOW `elem` (snd $ unzip $ M.toList $ snd $ changeSignal M.! e)
@@ -34,10 +34,11 @@ activateConj (e,s,o) c acum
 
 activate :: [Cable] -> Flops -> Conjunction -> (Int,Int) -> ((Int,Int),Flops,Conjunction)
 activate [] f c acum = (acum,f,c)
-activate e f c (aH,aL) = traceShow (newer,newe) activate (newe) newf newc (aH+countH,aL+countL)
+activate e f c (aH,aL) = traceShow (newfilt) activate (newfilt) newf newc (aH+countH,aL+countL)
   where
     (newer,newf) = foldl (\(li,fl) w -> activateFlops w fl li) ([],f) e
     (newe,newc) = foldl (\(li,fl) w -> activateConj w fl li) ([],c) newer
+    newfilt = filter (\(ee,_,_) -> (M.member ee f) || (M.member ee c)) (newe)
     countH = foldl (\a (ax,bx,cx) -> if bx==HIGH then a+1 else a) 0 $ removeDuplicates (newe++newer)
     countL = foldl (\a (ax,bx,cx) -> if bx==LOW then a+1 else a) 0 $ removeDuplicates (newe++newer)
 
@@ -73,7 +74,7 @@ solve :: T.Text -> Int
 solve x = traceShow(iH,(iL+(length ins)*(1+(length input)))) iH*(iL+(length ins)*(1+(length input)))
   where
     result@((iH,iL),f,c) = foldl (\(ii,ff,cc) w -> activate input ff cc ii) ((0,0),flopsM,conjunctions) ins
-    ins = [1..1000]
+    ins = [1]
     input = map (\w -> (w,LOW,"BROADCAST")) open
     flopsM = M.fromList flops
     flops = parseFlops $ T.lines x
