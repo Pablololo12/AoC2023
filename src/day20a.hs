@@ -2,9 +2,9 @@ module Day20a (solve) where
 
 import qualified Data.Text as T
 import qualified Data.Map.Strict as M
+import qualified Data.Set as S
 import Data.List
 import Data.Maybe
-import Debug.Trace
 
 type Entry = String
 data State = ON | OFF deriving (Eq,Ord,Show)
@@ -13,20 +13,23 @@ type Cable = (Entry,Signal,Entry) -- next gate, signal, origin
 type Flops = M.Map Entry ([Entry],State)
 type Conjunction = M.Map Entry ([Entry],M.Map Entry Signal)
 
-activateFlops :: Cable -> Flops -> [Cable] -> ([Cable],Flops)
-activateFlops (e,s,o) f acum
-  | M.member e f = if s==HIGH then (acum,f) else ((zip3 ents (repeat change) (repeat e))++acum,addLow)
-  | otherwise = ((e,s,o):acum,f)
+activateFlops :: Cable -> Flops -> (Int,Int) -> [Cable] -> ([Cable],Flops,(Int,Int))
+activateFlops (e,s,o) f iii@(iih,iil) acum
+  | M.member e f = if s==HIGH then (acum,f,iii) else ((zip3 ents (repeat change) (repeat e))++acum,addLow,(iih+addh,iil+addl))
+  | otherwise = ((e,s,o):acum,f,iii)
   where
     (ents,m) = (f M.! e)
+    addh = if change==HIGH then (length ents) else 0
+    addl = if change==LOW then (length ents) else 0
     change = if m==ON then LOW else HIGH
     changeS = if m==ON then OFF else ON
     addLow = M.insert e (ents,changeS) f
 
-activateConj :: Cable -> Conjunction -> [Cable] -> ([Cable],Conjunction)
-activateConj (e,s,o) c acum
-  | M.member e c =  if allHigh then ((zip3 rets (repeat LOW) (repeat e))++acum,changeSignal) else ((zip3 rets (repeat HIGH) (repeat e))++acum,changeSignal)
-  | otherwise = ((e,s,o):acum,c)
+activateConj :: Cable -> Conjunction -> (Int,Int) -> [Cable] -> ([Cable],Conjunction,(Int,Int))
+activateConj cab@(e,s,o) c (iih,iil) acum
+  | (M.member e c) && allHigh = ((zip3 rets (repeat LOW) (repeat e))++acum,changeSignal,(iih,(iil+(length rets))))
+  | M.member e c = ((zip3 rets (repeat HIGH) (repeat e))++acum,changeSignal,(iih+(length rets),iil))
+  | otherwise = ((e,s,o):acum,c,(iih,iil))
   where
     allHigh = not $ LOW `elem` (snd $ unzip $ M.toList $ snd $ changeSignal M.! e)
     changeSignal = M.insert e (rets,(M.insert o s mapa)) c
@@ -34,13 +37,11 @@ activateConj (e,s,o) c acum
 
 activate :: [Cable] -> Flops -> Conjunction -> (Int,Int) -> ((Int,Int),Flops,Conjunction)
 activate [] f c acum = (acum,f,c)
-activate e f c (aH,aL) = traceShow (newfilt) activate (newfilt) newf newc (aH+countH,aL+countL)
+activate e f c (aH,aL) = activate (newfilt) newf newc (aH+iihf+iiihf,aL+iilf+iiihl)
   where
-    (newer,newf) = foldl (\(li,fl) w -> activateFlops w fl li) ([],f) e
-    (newe,newc) = foldl (\(li,fl) w -> activateConj w fl li) ([],c) newer
+    (newer,newf,(iiihf,iiihl)) = foldl (\(li,fl,iii) w -> activateFlops w fl iii li) ([],f,(0,0)) e
+    (newe,newc,(iihf,iilf)) = foldl (\(li,fl,iii) w -> activateConj w fl iii li) ([],c,(0,0)) newer
     newfilt = filter (\(ee,_,_) -> (M.member ee f) || (M.member ee c)) (newe)
-    countH = foldl (\a (ax,bx,cx) -> if bx==HIGH then a+1 else a) 0 $ removeDuplicates (newe++newer)
-    countL = foldl (\a (ax,bx,cx) -> if bx==LOW then a+1 else a) 0 $ removeDuplicates (newe++newer)
 
 removeDuplicates :: Eq a => [a] -> [a]
 removeDuplicates [] = []
@@ -71,10 +72,10 @@ parserCon (x:xs) m
     l = foldl (\z (f,(g,h)) -> if a `elem` g then f:z else z) [] m
 
 solve :: T.Text -> Int
-solve x = traceShow(iH,(iL+(length ins)*(1+(length input)))) iH*(iL+(length ins)*(1+(length input)))
+solve x = (iH)*(iL+(length ins)*(1+(length input)))
   where
     result@((iH,iL),f,c) = foldl (\(ii,ff,cc) w -> activate input ff cc ii) ((0,0),flopsM,conjunctions) ins
-    ins = [1]
+    ins = [1..1000]
     input = map (\w -> (w,LOW,"BROADCAST")) open
     flopsM = M.fromList flops
     flops = parseFlops $ T.lines x
